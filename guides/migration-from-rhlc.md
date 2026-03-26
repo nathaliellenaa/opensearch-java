@@ -12,7 +12,6 @@ cd opensearch-java
 git checkout rhlc_migration
 
 # Publish to local Maven repository
-# Note: The build auto-appends "-SNAPSHOT" to the version property
 ./gradlew :java-client:publishToMavenLocal
 ```
 
@@ -448,15 +447,3 @@ val response = asyncClient.search(request, MyDoc::class.java).await()
 | `addExt(String, JsonData)` | Add ext entry (plugin params) | `getExt()` |
 | `addSearchAfter(FieldValue...)` | Add search_after values | — |
 | `seqNoPrimaryTerm(boolean)` | Return seq_no and primary_term | — |
-
----
-
-## Recommended Migration Order
-
-1. **Transport layer** — swap `RestHighLevelClient` for `OpenSearchClient`
-2. **Simple search requests** — start with requests that don't use complex pipelines
-3. **Pipeline-based requests** — use `StatefulSearchRequestBuilder` as a drop-in for mutable `SearchRequest`
-4. **Response parsing** — replace `ParsedTerms`/`ParsedFilters` with `SearchResponseHelper`
-5. **Facet logic** — refactor facet helpers to return `Query` objects instead of mutating `BoolQueryBuilder`
-6. **KNN/plugin queries** — use low-level `RestClient` for unsupported query types, or `JsonData` for ext
-7. **Tests** — update mocks from RHLC types to new client types
